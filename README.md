@@ -1,5 +1,7 @@
 # Okanjo Boilerplate
 
+[![Build Status](https://travis-ci.org/Okanjo/okanjo-boilerplate.svg?branch=master)](https://travis-ci.org/Okanjo/okanjo-boilerplate) [![Coverage Status](https://coveralls.io/repos/github/Okanjo/okanjo-boilerplate/badge.svg?branch=master)](https://coveralls.io/github/Okanjo/okanjo-boilerplate?branch=master)
+
 This project delivers a fully working application using the Okanjo framework. You can use this app as 
 a starting point for new web applications.  
 
