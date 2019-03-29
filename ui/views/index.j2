@@ -10,7 +10,7 @@
     {#<link rel="stylesheet" type="text/css" href="/dist/css/app.min.css">#}
 
     <!--[if lt IE 9]>
-    <script src="/dist/js/html5shiv.js"></script>
+    <script src="/dist/js/html5shiv.min.js"></script>
     <![endif]-->
 
     <meta name="description" content="">
@@ -29,7 +29,7 @@
 
 <script>
     window._env = '{{ env }}';
-    window._ver = {{ version|json }};
+    window._ver = {{ version|json|safe }};
     window._ua = '{{ app.config.google.ua }}';
     window.app = {};
 </script>

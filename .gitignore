@@ -1,5 +1,7 @@
 .idea
 node_modules
+bower_components
 ui/static/dist/*/tmp
 coverage
 .nyc_output
+package-lock.json

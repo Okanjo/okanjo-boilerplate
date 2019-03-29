@@ -1,6 +1,6 @@
 
 //region Imports
-const Gulp       = require('gulp');
+const { src, dest, parallel, series, watch } = require('gulp');
 const Browserify = require('browserify');
 const VinylSource = require('vinyl-source-stream');
 const Concat = require('gulp-concat');
@@ -85,13 +85,13 @@ const vendorCssSources = [
 ];
 
 // Font files
-const fonts = [
+const fontSources = [
     'ui/fonts/*'
 ];
 
 // Un-minified vendor sources that should get minified and rolled into the main vendor js
 const unminifiedVendorSources = [
-    'node_modules/whatwg-fetch/fetch.js',
+    'node_modules/whatwg-fetch/dist/fetch.umd.js',
     // 'node_modules/socket.io-client/socket.io.js',    // Enable socket.io in the build
 ];
 
@@ -103,7 +103,7 @@ const vendorSources = [
 
 // Conditionally loaded scripts (e.g. IE 8)
 const unbundledVendorSources = [
-    'node_modules/html5shiv/dist/html5shiv.js'
+    'node_modules/html5shiv/dist/html5shiv.min.js'
 ];
 
 //endregion
@@ -113,11 +113,11 @@ const unbundledVendorSources = [
 /**
  * Clean vendor and generated files
  */
-Gulp.task('clean', function() {
+exports.clean = function clean() {
     return Del([
         'ui/static/dist/**/*'
     ]);
-});
+};
 
 //endregion
 
@@ -126,61 +126,66 @@ Gulp.task('clean', function() {
 /**
  * Minify vendor files
  */
-Gulp.task('pre-vendor-js', [], function() {
-    return Gulp
-        .src(unminifiedVendorSources)
+exports.preVendorJs = function preVendorJs() {
+    return src(unminifiedVendorSources)
         .pipe(SourceMaps.init({ loadMaps: true }))
         .pipe(Uglify({ output: { comments: 'some' } }).on('error', (...args) => {
             console.log('Blew up!', args);
         }))
         .pipe(Rename({ suffix: '.min' }))
         .pipe(SourceMaps.write('.'))
-        .pipe(Gulp.dest('ui/static/dist/js/tmp'))
-    ;
-});
+        .pipe(dest('ui/static/dist/js/tmp'))
+        ;
+};
 
 
 /**
  * Just copy unbundled sources to the dist directory
  */
-Gulp.task('nonbundle-vendor-js', ['pre-vendor-js'], function() {
-    return Gulp
-        .src(unbundledVendorSources)
-        .pipe(Gulp.dest('ui/static/dist/js'));
-});
+exports.nonBundleVendorJs = function nonBundleVendorJs() {
+    return src(unbundledVendorSources)
+        .pipe(dest('ui/static/dist/js'));
+};
 
 
 /**
  * Glue all our minified vendor files together into a single monolith
  */
-Gulp.task('vendor-js', ['nonbundle-vendor-js'], function() {
-    return Gulp
-        .src(vendorSources)
+exports.makeVendorJs = function makeVendorJs() {
+    return src(vendorSources)
         .pipe(SourceMaps.init({ loadMaps: true }))
         .pipe(Concat('vendor.min.js'))
         .pipe(SourceMaps.write('.'))
-        .pipe(Gulp.dest('ui/static/dist/js'));
-});
+        .pipe(dest('ui/static/dist/js'));
+};
+
+exports.vendorJs = series([
+    parallel([
+        exports.preVendorJs,
+        exports.nonBundleVendorJs
+    ]),
+    exports.makeVendorJs
+]);
 
 
 /**
  * Glue all the vendor css files into a single monolith
  */
-Gulp.task('vendor-css', function() {
+exports.vendorCss = function vendorCss() {
     //noinspection UnnecessaryLocalVariableJS
     const combined = Combiner.obj([
-        Gulp.src(vendorCssSources),
+        src(vendorCssSources),
         SourceMaps.init({loadMaps: true}),
         Concat('vendor.css'),
-        Gulp.dest('ui/static/dist/css'),
+        dest('ui/static/dist/css'),
         CleanCSS({inline: ['!fonts.googleapis.com']}),
         Rename('vendor.min.css'),
         SourceMaps.write('.'),
-        Gulp.dest('ui/static/dist/css')
+        dest('ui/static/dist/css')
     ]);
 
     return combined;
-});
+};
 
 //endregion
 
@@ -190,27 +195,27 @@ Gulp.task('vendor-css', function() {
 /**
  * Compile the Less files into css, glue them together and minify them into a monolith
  */
-Gulp.task('css',['fonts'], function() {
+exports.compileCss = function compileCss() {
     //noinspection UnnecessaryLocalVariableJS
     const combined = Combiner.obj([
-        Gulp.src(appStyles),
+        src(appStyles),
         SourceMaps.init({loadMaps: true}),
         Less({
             plugins: [cssAutoPrefix],
             paths: [Path.join(__dirname, 'styles')]
         }),
-        Gulp.dest('ui/static/dist/css/tmp'),
+        dest('ui/static/dist/css/tmp'),
 
         // This part just joins all the less files together and dumps it to dist.css (except ui-guide)
         Ignore.exclude('ui-guide.css'),
         Concat('app.css'),
-        Gulp.dest('ui/static/dist/css'),
+        dest('ui/static/dist/css'),
 
         // This part minifies dist.css to dist.min.css
         CleanCSS({compatibility: 'ie8,-units.pt'}),
         Rename('app.min.css'),
         SourceMaps.write('.'),
-        Gulp.dest('ui/static/dist/css')
+        dest('ui/static/dist/css')
     ]);
 
     // any errors in the above streams will get caught
@@ -218,14 +223,18 @@ Gulp.task('css',['fonts'], function() {
     //combined.on('error', console.error.bind(console));
 
     return combined;
-});
+};
 
 // Copy font files to dist
-Gulp.task('fonts', [], function() {
-    return Gulp
-        .src(fonts)
-        .pipe(Gulp.dest('ui/static/dist/fonts'));
-});
+exports.fonts = function fonts() {
+    return src(fontSources)
+        .pipe(dest('ui/static/dist/fonts'));
+};
+
+exports.css = series([
+    exports.fonts,
+    exports.compileCss
+]);
 
 //endregion
 
@@ -288,46 +297,44 @@ vendorBundler.transform(Babelify);
 /**
  * Glues all the app sources together into a monolith
  */
-const bundleApp = () => {
+exports.bundleApp = function bundleApp() {
     return bundler
         .bundle()
         .on('error', (err) => { console.error('Browserify Error:', err.message, err.stack); })
         .pipe(VinylSource('app-bundle.js'))
         //.pipe(VinylBuffer())
-        .pipe(Gulp.dest('ui/static/dist/js'));
+        .pipe(dest('ui/static/dist/js'));
     // TODO - minifiy before production (unnecessary slow down for dev)
     //.pipe(SourceMaps.init())
     //.pipe(Rename('bundle.min.js'))
     //.pipe(Uglify())
     //.pipe(SourceMaps.write('./'))
-    //.pipe(Gulp.dest('ui/static/dist'));
+    //.pipe(dest('ui/static/dist'));
 };
 
 /**
  * Glues all the vendor sources together into a monolith
  */
-const bundleVendor = () => {
+exports.bundleVendor = function bundleVendor() {
     return vendorBundler
         .bundle()
         .on('error', (err) => { console.error('Browserify Vendor Error:', err.message, err.stack, err); })
         .pipe(VinylSource('bundle-vendor.js'))
         //.pipe(VinylBuffer())
-        .pipe(Gulp.dest('ui/static/dist/js'));
+        .pipe(dest('ui/static/dist/js'));
     // TODO - minifiy before production (unnecessary slow down for dev)
     //.pipe(SourceMaps.init())
     //.pipe(Rename('bundle.min.js'))
     //.pipe(Uglify())
     //.pipe(SourceMaps.write('./'))
-    //.pipe(Gulp.dest('ui/static/dist'));
+    //.pipe(dest('ui/static/dist'));
 };
 
 
-Gulp.task('js-bundle', bundleApp);
-bundler.on('update', bundleApp);
+bundler.on('update', exports.bundleApp);
 bundler.on('log', function(summary) { console.log(' > Updated app bundle:', summary); });
 
-Gulp.task('js-bundle-vendor', bundleVendor);
-vendorBundler.on('update', bundleVendor);
+vendorBundler.on('update', exports.bundleVendor);
 vendorBundler.on('log', function(summary) { console.log(' > Updated vendor bundle:', summary); });
 
 //endregion
@@ -336,43 +343,43 @@ vendorBundler.on('log', function(summary) { console.log(' > Updated vendor bundl
 
 
 // Watches for changes to the CSS and forces a rebuild if there's a change
-Gulp.task('watch-js', function() {
-    Gulp.watch(appSources, ['js-bundle']);
-});
+exports.watchJs = function watchJs() {
+    watch(appSources, exports.bundleApp);
+};
 
 // Watches for changes to the CSS and forces a rebuild if there's a change
-Gulp.task('watch-css', function() {
-    Gulp.watch(watchStyles, ['css']);
-});
+exports.watchCss = function watchJs() {
+    watch(watchStyles, exports.css);
+};
 
 // Watches for changes to client templates
-Gulp.task('watch-everything', ['watch-js', 'watch-css']);
+exports.watchEverything = parallel([
+    exports.watchJs,
+    exports.watchCss,
+]);
 
 //endregion
 
 //region Main tasks
-
-Gulp.task('build', [
+exports.build = parallel([
     // Acquire and build vendor stuff
-    'vendor-js', 'vendor-css',
+    exports.vendorJs,
+    exports.vendorCss,
 
     // Build the css stuff
-    'css',
+    exports.css,
 
     // Build the app stuff
-    'js-bundle-vendor',
-    'js-bundle'
+    exports.bundleVendor,
+    exports.bundleApp
 ]);
 
 // Default, like dev mode
-Gulp.task('default', [
-    'build',
+exports.default = parallel([
+    // Build everything
+    exports.build,
 
     // Watch for changes #devmode
-    'watch-everything'
+    exports.watchEverything
 ]);
-
 //endregion
-
-// Return our gulp so it can be used by the app
-module.exports = Gulp;

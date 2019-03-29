@@ -4,10 +4,10 @@
 module.exports = function() {
 
     // Establish the correct environment for reporting on the home page
-    const info = require('../../package.json');
+    const pkg = require('../../package.json');
     let env = this.app.currentEnvironment;
 
-    /* istanbul ignore else: trust me */
+    /* istanbul ignore next: testing */
     if (this.app.currentEnvironment === "default") {
         env = "local";
     } else if (this.app.currentEnvironment === "production") {
@@ -19,12 +19,12 @@ module.exports = function() {
     this.hapi.route({
         method: 'GET',
         path: '/version',
-        handler: (request, reply) => {
+        handler: (/*request, h*/) => {
 
-            reply(this.app.response.ok({
-                version: info.version,
+            return this.app.response.ok({
+                version: pkg.version,
                 mode: env
-            }));
+            });
 
         },
         config: {

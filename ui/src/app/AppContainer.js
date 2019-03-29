@@ -1,11 +1,9 @@
 "use strict";
 
 import React from 'react';
-import PropTypes from 'prop-types';
-import { Provider } from 'react-redux';
 import { Route, Switch, withRouter,  } from 'react-router-dom';
-
 import { connect } from 'react-redux';
+
 import App from "./App";
 import ScrollToTop from "./ScrollToTop";
 import NotFound from "./NotFound";
@@ -18,26 +16,20 @@ const mapStateToProps = (state) => {
     return {};
 };
 
-const AppContainer = ({ account, store }) => (
-    <Provider store={store}>
-        <ScrollToTop>
-            <App>
-                <Switch>
-                    {/* Customer process pages */}
-                    <Route exact path="/" component={HomePage} />
+const AppContainer = () => (
+    <ScrollToTop>
+        <App>
+            <Switch>
+                {/* Customer process pages */}
+                <Route exact path="/" component={HomePage} />
 
-                    <Route exact path="/page1" component={Page1} />
-                    <Route exact path="/page2" component={Page2} />
+                <Route exact path="/page1" component={Page1} />
+                <Route exact path="/page2" component={Page2} />
 
-                    <Route component={NotFound} />
-                </Switch>
-            </App>
-        </ScrollToTop>
-    </Provider>
+                <Route component={NotFound} />
+            </Switch>
+        </App>
+    </ScrollToTop>
 );
-
-AppContainer.propTypes = {
-    store: PropTypes.object.isRequired,
-};
 
 export default withRouter(connect(mapStateToProps)(AppContainer));

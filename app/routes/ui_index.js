@@ -6,8 +6,8 @@ module.exports = function() {
     this.hapi.route({
         method: 'GET',
         path: '/{path*}',
-        handler: (request, reply) => {
-            reply.view('index.j2', {
+        handler: (request, h) => {
+            return h.view('index.j2', {
                 app: this.app
             });
         },

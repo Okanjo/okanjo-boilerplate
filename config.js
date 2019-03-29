@@ -9,20 +9,7 @@ module.exports = {
     webServer: {
 
         hapiServerOptions: {
-            // cache: [
-            //     {
-            //         name: 'redisCache',
-            //         engine: require('catbox-redis'),
-            //         host: this.app.config.redis.host,
-            //         port: this.app.config.redis.port,
-            //         database: this.app.config.redis.db || 0,
-            //         partition: 'app-cache'
-            //     }
-            // ]
-        },
-
-        // HAPI global options
-        hapiConnectionOptions: {
+            port: 7001,
             routes: {
                 // cors: true, // always allow CORS - think about it!
                 // jsonp: 'callback', // allow transposition of responses to JSONP callbacks when desired
@@ -36,11 +23,23 @@ module.exports = {
                         stripUnknown: true
                     }
                 }
-            }
+            },
+
+            // Uncomment this section if you want to store your session data in redis
+            // Useful for live environments
+            // cache: [
+            //     {
+            //         name: 'myRedisCache',
+            //         engine: new (require('catbox-redis'))({
+            //             host: '127.0.0.1',
+            //             port: 6379,
+            //             database: 0,
+            //             partition: 'my-app-cache'
+            //         }),
+            //     }
+            // ]
         },
 
-        // Basic config
-        port: 7001,
         drainTime: 1, // how long to wait to drain connection before killing the socket on shutdown (in ms)
 
         // Worker config
@@ -87,18 +86,13 @@ module.exports = {
 
     // Session plugin config
     sessionAuth: {
-        cookie: {
-            name: "okbp-sid", // this is the name of the session cookie
-            options: {
-                ttl: TWO_WEEKS,
-                encoding: 'none',
-                isSecure: false,
-                path: '/' // <-- without this, you might end up with setting cookies on each page of the site. DERP DERP
-            } // override default cookie options (use HAPI cookie settings)
-        },
-        redirectOnTry: false, // Whether to redirect when auth fails
+        cookie: "okbp-sid", // this is the name of the session cookie
+        ttl: TWO_WEEKS,
+        isSecure: false,
+        path: '/',
         redirectTo: '/login', // Where to redirect to when auth fails
-        appendNext: false // Whether to include the former url as the `next` parameter to the login redirect (so you can point the client back to the starting page #ux)
+        appendNext: false,
+        keepAlive: true,
     },
 
     // redis: {
@@ -131,6 +125,12 @@ module.exports = {
             build: false
         },
 
+        reportToSentry: true
+    },
+    //endregion
+
+    //region Unit Test Environment Overrides
+    unittest: {
         reportToSentry: true
     }
     //endregion

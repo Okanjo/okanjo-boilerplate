@@ -1,6 +1,29 @@
 "use strict";
 
 /**
+ * Web server command module
+ * @param program
+ */
+module.exports = function(program) {
+
+    const app = require('../');
+
+    //noinspection JSUnusedLocalSymbols
+    program
+        .command('web')
+        .option('-b, --nobuild', "Don't build on start", false)
+        .option('-w, --watch', "Restart API on file changes", false)
+        .description('Run a web server instance')
+        .action(function(options) {
+
+            startServer(app, options);
+
+        })
+    ;
+
+};
+
+/**
  * Recycles the workers running in the web brokerage
  * @param broker - The web broker
  * @param path - The path that caused the reload
@@ -24,12 +47,12 @@ function digForLint() {
     const Path = require('path');
     const OS = require('os');
     const lint = Spawn(
-            Path.join(__dirname, '..', '..', 'node_modules', '.bin', 'eslint' + (OS.type() === 'Windows_NT' ? '.cmd' : '')),
-            ['.'],
-            {
-                stdio: 'inherit'
-            }
-        );
+        Path.join(__dirname, '..', '..', 'node_modules', '.bin', 'eslint' + (OS.type() === 'Windows_NT' ? '.cmd' : '')),
+        ['.'],
+        {
+            stdio: 'inherit'
+        }
+    );
 
     lint.on('close', function(code) {
         if (code !== 0) {
@@ -94,7 +117,7 @@ function launchBroker(app, options) {
     });
 
     // If auto-reload is enabled, auto recycle the web server workers when a change to a file happens
-    if (app.config.webServer.autoReload) {
+    if (app.config.webServer.autoReload || options.watch) {
         const Chokidar = require('chokidar');
         const Path = require('path');
 
@@ -102,11 +125,6 @@ function launchBroker(app, options) {
             Path.join(__dirname, '..', '..', 'app', 'routes', '*.js'),
             Path.join(__dirname, '..', '..', 'app', '*.js'),
             Path.join(__dirname, '..', '..', 'app', 'services', '*.js')
-            //path.join(__dirname,'..','..','ui','components','*.js'),
-            //path.join(__dirname,'..','..','ui','extensions','*.js'),
-            //path.join(__dirname,'..','..','ui','lib','*.js'),
-            //path.join(__dirname,'..','..','ui','styles','*.less'),
-            //path.join(__dirname,'..','..','ui','routes','**/*.js')
         ], {usePolling: true});
 
         watcher
@@ -141,55 +159,37 @@ function startServer(app, options) {
         setImmediate(() => {
 
             // Build website assets prior to launching
-            const gulp = require('../../gulpfile')
-                .on('task_start', function(e) {
-                    console.error(' >> Starting task ' + e.task + '...');
-                })
-                .on('task_stop', function(e) {
-                    console.error(' >> Finished task ' + e.task + ' in ' + e.duration.toPrecision(2) + 's');
-                })
-                .on('task_err', function(e) {
-                    app.report('Gulp task blew up!', e);
-                })
-                .on('start', function(e) {
-                    console.error(' >> Starting build [' + e.message + ']');
-                })
-                .on('stop', function() {
-                    console.error(' >> Build successful.');
-                })
-                .on('err', function(err) {
-                    app.report('Gulp build blew up!', err);
-                    console.error(' >> Build failed!', err);
-                })
-                .once('stop', launchBroker.bind(null, app, options));
+            const Gulp = require('gulp');
+            const tasks = require('../../gulpfile');
 
-            gulp.start('default');
+            Gulp.on('start', (e) => {
+                console.error(` >> Starting '${e.name}'...`);
+            });
+
+            Gulp.on('stop', (e) => {
+                console.error(` >> Finished '${e.name}' in ${(e.duration[0] * 1e9 + e.duration[1])/1e9}s`);
+                if (e.uid === 0) {
+                    // BUILD DONE
+                    launchBroker(app, options);
+                }
+            });
+
+            Gulp.on('error', (err) => {
+                // app.report('Gulp build blew up!', err);
+                console.error(' >> Build failed!', err);
+            });
+
+            Object.keys(tasks).forEach((taskName) => {
+                const task = tasks[taskName];
+                if (typeof task !== 'function') return;
+
+                Gulp.task(taskName, task);
+            });
+
+            tasks.default(/* () => { done } */); // won't complete cuz browserify will keep it rolling
         });
     } else {
         // Skipping build, just start up
         launchBroker(app, options);
     }
 }
-
-
-/**
- * Web server command module
- * @param program
- */
-module.exports = function(program) {
-
-    const app = require('../');
-
-    //noinspection JSUnusedLocalSymbols
-    program
-        .command('web')
-        .option('-b, --nobuild', "Don't build on start", false)
-        .description('Run a web server instance')
-        .action(function(options) {
-
-            startServer(app, options);
-
-        })
-    ;
-
-};

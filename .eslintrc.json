@@ -17,5 +17,16 @@
     "rules": {
         "strict": 0,
         "semi": 1
+    },
+    "globals": {
+        "require": true,
+        "module": true,
+        "describe": true,
+        "it": true,
+        "before": true,
+        "beforeEach": true,
+        "after": true,
+        "afterEach": true,
+        "Promise": true
     }
 }

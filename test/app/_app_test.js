@@ -9,4 +9,9 @@ describe('App', function () {
         should(app).be.ok();
     });
 
+    it('should start', async () => {
+        const app = require('../../app');
+        await app.connectToServices();
+    });
+
 });

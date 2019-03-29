@@ -1,3 +1,4 @@
+--require ./test/env.js
 --require should
 --reporter spec
 --recursive
