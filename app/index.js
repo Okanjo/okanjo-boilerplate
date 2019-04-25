@@ -7,7 +7,7 @@ const app = new OkanjoApp(config);
 app.services = {};
 
 app.workers = {
-    web: require('./workers/web_worker')
+    web: require('./workers/WebWorker')
 };
 
 module.exports = app;

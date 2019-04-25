@@ -96,7 +96,8 @@ class WebWorker extends OkanjoWorker {
      * Starts the internal shutdown process (hook point)
      */
     async prepareForShutdown(canAsync) {
-        await this.web.stop();
+        /* istanbul ignore else: race condition or aborted startup */
+        if (this.web) await this.web.stop();
         this.shutdown();
     }
 }

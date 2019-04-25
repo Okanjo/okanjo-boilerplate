@@ -2,7 +2,7 @@
 
 const should = require('should');
 const Async = require('async');
-const WebWorker = require('../../app/workers/web_worker');
+const WebWorker = require('../../app/workers/WebWorker');
 const Needle = require('needle');
 
 describe('Web Command', function () {
