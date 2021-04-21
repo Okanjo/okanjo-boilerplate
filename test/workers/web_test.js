@@ -1,13 +1,18 @@
 "use strict";
 
 const should = require('should');
-const Async = require('async');
 const WebWorker = require('../../app/workers/WebWorker');
 const Needle = require('needle');
 
 describe('Web Command', function () {
 
     const app = require('../../app/index');
+
+    async function sleep(duration) {
+        return await new Promise(resolve => {
+            setTimeout(resolve, duration);
+        });
+    }
 
     describe('basic usage', () => {
         let worker;
@@ -24,27 +29,23 @@ describe('Web Command', function () {
             });
         });
 
-        it('should start', (done) => {
+        it('should start', async () => {
             // Retry until the server starts up
-            Async.retry({times: 20, interval: 250}, (cb) => {
-                Needle.get('http://localhost:' + app.config.webServer.hapiServerOptions.port + '/', (err, res) => {
-
-                    if (err) {
-                        cb(err);
+            let success = false;
+            for (let statusCode, i = 0; i < 20 && !success; i++) {
+                try {
+                    ({statusCode} = await Needle('get', `http://localhost:${app.config.webServer.hapiServerOptions.port}/`));
+                } finally {
+                    if (statusCode === 200) {
+                        success = true;
                     } else {
-                        res.should.be.an.Object();
-
-                        //console.log(err, res);
-                        res.statusCode.should.be.equal(200);
-                        cb();
+                        await sleep(250);
                     }
-
-                });
-            }, (err) => {
-                should(err).not.be.ok();
-                done();
-            });
+                }
+            }
+            should(success).be.exactly(true);
         });
+
     });
 
     describe('session cache', () => {
@@ -75,25 +76,21 @@ describe('Web Command', function () {
         });
 
 
-        it('should use redis session store if asked to do so', (done) => {
+        it('should use redis session store if asked to do so', async () => {
             // Retry until the server starts up
-            Async.retry({times: 20, interval: 250}, (cb) => {
-                Needle.get('http://localhost:' + (app.config.webServer.hapiServerOptions.port) + '/', (err, res) => {
-                    if (err) {
-                        cb(err);
+            let success = false;
+            for (let statusCode, i = 0; i < 20 && !success; i++) {
+                try {
+                    ({statusCode} = await Needle('get', `http://localhost:${app.config.webServer.hapiServerOptions.port}/`));
+                } finally {
+                    if (statusCode === 200) {
+                        success = true;
                     } else {
-                        res.should.be.an.Object();
-
-                        //console.log(err, res);
-                        res.statusCode.should.be.equal(200);
-                        cb();
+                        await sleep(250);
                     }
-
-                });
-            }, (err) => {
-                should(err).not.be.ok();
-                done();
-            });
+                }
+            }
+            success.should.be.exactly(true);
         });
 
     });
@@ -119,50 +116,42 @@ describe('Web Command', function () {
         });
 
 
-        it('should force https if configured to do so', (done) => {
+        it('should force https if configured to do so', async () => {
             // Retry until the server starts up
-            Async.retry({times: 20, interval: 250}, (cb) => {
-                Needle.get('http://localhost:' + (app.config.webServer.hapiServerOptions.port) + '/', (err, res) => {
-                    if (err) {
-                        cb(err);
+            let success = false;
+            for (let statusCode, i = 0; i < 20 && !success; i++) {
+                try {
+                    ({statusCode} = await Needle('get', `http://localhost:${app.config.webServer.hapiServerOptions.port}/`));
+                } finally {
+                    if (statusCode === 301) {
+                        success = true;
                     } else {
-                        res.should.be.an.Object();
-
-                        // console.log(err, res);
-                        res.statusCode.should.be.equal(301);
-                        cb();
+                        await sleep(250);
                     }
-
-                });
-            }, (err) => {
-                should(err).not.be.ok();
-                done();
-            });
+                }
+            }
+            success.should.be.exactly(true);
         });
 
-        it('should handle ssl offloading', (done) => {
+        it('should handle ssl offloading', async () => {
             // Retry until the server starts up
-            Async.retry({times: 20, interval: 250}, (cb) => {
-                Needle.get('http://localhost:' + (app.config.webServer.hapiServerOptions.port) + '/', {
-                    headers: {
-                        'x-forwarded-proto': 'https'
-                    }
-                }, (err, res) => {
-                    if (err) {
-                        cb(err);
+            let success = false;
+            for (let statusCode, i = 0; i < 20 && !success; i++) {
+                try {
+                    ({ statusCode } = await Needle('get', `http://localhost:${app.config.webServer.hapiServerOptions.port}/`, {}, {
+                        headers: {
+                            'x-forwarded-proto': 'https'
+                        }
+                    }));
+                } finally {
+                    if (statusCode === 200) {
+                        success = true;
                     } else {
-                        res.should.be.an.Object();
-
-                        //console.log(err, res);
-                        res.statusCode.should.be.equal(200);
-                        cb();
+                        await sleep(250);
                     }
-
-                });
-            }, (err) => {
-                should(err).not.be.ok();
-                done();
-            });
+                }
+            }
+            success.should.be.exactly(true);
         });
 
     });

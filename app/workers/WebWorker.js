@@ -1,9 +1,5 @@
 "use strict";
 
-/**
- * App
- * @type {OkanjoApp}
- */
 const OkanjoWorker = require('okanjo-app-broker/OkanjoWorker');
 const Cluster = require('cluster');
 const OkanjoServer = require('okanjo-app-server');
@@ -88,7 +84,7 @@ class WebWorker extends OkanjoWorker {
         await this.web.start();
 
         /* istanbul ignore next: testing might not use Cluster */
-        console.log('Web server', Cluster.worker ? Cluster.worker.id : '0', 'running at:', this.web.hapi.info.uri);
+        console.log('Web server', Cluster.worker ? Cluster.worker.id : '0', 'running at:', this.web.hapi.info.uri); // eslint-disable-line no-console
     }
 
     //noinspection JSUnusedGlobalSymbols,JSUnusedLocalSymbols

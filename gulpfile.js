@@ -1,3 +1,4 @@
+"use strict";
 
 //region Imports
 const { src, dest, parallel, series, watch } = require('gulp');
@@ -130,7 +131,7 @@ exports.preVendorJs = function preVendorJs() {
     return src(unminifiedVendorSources)
         .pipe(SourceMaps.init({ loadMaps: true }))
         .pipe(Uglify({ output: { comments: 'some' } }).on('error', (...args) => {
-            console.log('Blew up!', args);
+            console.error('Blew up!', args); // eslint-disable-line no-console
         }))
         .pipe(Rename({ suffix: '.min' }))
         .pipe(SourceMaps.write('.'))
@@ -300,7 +301,7 @@ vendorBundler.transform(Babelify);
 exports.bundleApp = function bundleApp() {
     return bundler
         .bundle()
-        .on('error', (err) => { console.error('Browserify Error:', err.message, err.stack); })
+        .on('error', (err) => { console.error('Browserify Error:', err.message, err.stack); }) // eslint-disable-line no-console
         .pipe(VinylSource('app-bundle.js'))
         //.pipe(VinylBuffer())
         .pipe(dest('ui/static/dist/js'));
@@ -318,7 +319,7 @@ exports.bundleApp = function bundleApp() {
 exports.bundleVendor = function bundleVendor() {
     return vendorBundler
         .bundle()
-        .on('error', (err) => { console.error('Browserify Vendor Error:', err.message, err.stack, err); })
+        .on('error', (err) => { console.error('Browserify Vendor Error:', err.message, err.stack, err); }) // eslint-disable-line no-console
         .pipe(VinylSource('bundle-vendor.js'))
         //.pipe(VinylBuffer())
         .pipe(dest('ui/static/dist/js'));
@@ -332,10 +333,10 @@ exports.bundleVendor = function bundleVendor() {
 
 
 bundler.on('update', exports.bundleApp);
-bundler.on('log', function(summary) { console.log(' > Updated app bundle:', summary); });
+bundler.on('log', function(summary) { console.log(' > Updated app bundle:', summary); }); // eslint-disable-line no-console
 
 vendorBundler.on('update', exports.bundleVendor);
-vendorBundler.on('log', function(summary) { console.log(' > Updated vendor bundle:', summary); });
+vendorBundler.on('log', function(summary) { console.log(' > Updated vendor bundle:', summary); }); // eslint-disable-line no-console
 
 //endregion
 

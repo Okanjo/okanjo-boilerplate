@@ -30,7 +30,7 @@ module.exports = function(program) {
  * @param eslint – Whether to rerun eslint or not
  */
 function reloadBroker(broker, path, eslint) {
-    console.log(' > Reloading' + broker.type + ' broker due to change in file', path);
+    console.log(' > Reloading' + broker.type + ' broker due to change in file', path); // eslint-disable-line no-console
     broker.recycleWorkers();
 
     // Since code changed, re-lint!
@@ -56,13 +56,13 @@ function digForLint() {
 
     lint.on('close', function(code) {
         if (code !== 0) {
-            console.error(' ** Please fix the above errors before committing ** ');
+            console.error(' ** Please fix the above errors before committing ** '); // eslint-disable-line no-console
         }
     });
 
     /* if jshint blows up, it won't take everything else with it. */
     lint.on('error', function(err) {
-        console.error("I am Error.", err);
+        console.error("ESLint blew up", err); // eslint-disable-line no-console
     });
 
 }
@@ -99,7 +99,7 @@ function launchBroker(app, options) {
             const checkForShutdownState = () => {
                 if (isWebDrained) {
                     // Kill ourselves
-                    console.log('Graceful shutdown complete. Ending...');
+                    console.log('Graceful shutdown complete. Ending...'); // eslint-disable-line no-console
                     process.kill(process.pid, 'SIGTERM');
                 }
             };
@@ -138,11 +138,12 @@ function launchBroker(app, options) {
                 app.report('Blew up watching for web server changes', err);
             });
 
-        console.log('');
-        console.log('*******************************************************');
-        console.log('**** WATCHING FOR CHANGES - WILL RELOAD WEB SERVER ****');
-        console.log('*******************************************************');
-        console.log('');
+
+        console.log(''); // eslint-disable-line no-console
+        console.log('*******************************************************'); // eslint-disable-line no-console
+        console.log('**** WATCHING FOR CHANGES - WILL RELOAD WEB SERVER ****'); // eslint-disable-line no-console
+        console.log('*******************************************************'); // eslint-disable-line no-console
+        console.log(''); // eslint-disable-line no-console
     }
 
 }
@@ -163,11 +164,11 @@ function startServer(app, options) {
             const tasks = require('../../gulpfile');
 
             Gulp.on('start', (e) => {
-                console.error(` >> Starting '${e.name}'...`);
+                console.log(` >> Starting '${e.name}'...`); // eslint-disable-line no-console
             });
 
             Gulp.on('stop', (e) => {
-                console.error(` >> Finished '${e.name}' in ${(e.duration[0] * 1e9 + e.duration[1])/1e9}s`);
+                console.log(` >> Finished '${e.name}' in ${(e.duration[0] * 1e9 + e.duration[1])/1e9}s`); // eslint-disable-line no-console
                 if (e.uid === 0) {
                     // BUILD DONE
                     launchBroker(app, options);
@@ -176,7 +177,7 @@ function startServer(app, options) {
 
             Gulp.on('error', (err) => {
                 // app.report('Gulp build blew up!', err);
-                console.error(' >> Build failed!', err);
+                console.error(' >> Build failed!', err); // eslint-disable-line no-console
             });
 
             Object.keys(tasks).forEach((taskName) => {

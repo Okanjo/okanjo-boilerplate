@@ -37,16 +37,16 @@ if (Cluster.isMaster) {
             .command('*')
             .usage('')
             .action(function(cmd) {
-                console.error('');
-                console.error('Invalid command: ' + cmd);
+                console.error(''); // eslint-disable-line no-console
+                console.error('Invalid command: ' + cmd); // eslint-disable-line no-console
                 program.help();
             });
 
         // Help command
         program.on('--help', function() {
-            console.log('  Examples:');
+            console.log('  Examples:'); // eslint-disable-line no-console
             // TODO
-            console.log('');
+            console.log(''); // eslint-disable-line no-console
         });
 
         // Run it
@@ -67,7 +67,7 @@ if (Cluster.isMaster) {
     if (Worker) {
         new Worker(app);
     } else {
-        console.error(new Error('Child process work has no type given!'));
+        console.error(new Error('Child process work has no type given!')); // eslint-disable-line no-console
     }
 
 }

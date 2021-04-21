@@ -1,3 +1,6 @@
+"use strict";
+
+
 /**
  * @this OkanjoServer
  * @param env
