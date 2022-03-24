@@ -1,13 +1,13 @@
 "use strict";
 
 import React, { Component } from 'react';
-import {withRouter} from 'react-router-dom';
 
 import { connect } from 'react-redux';
 import {Col, Container, Row} from "react-bootstrap";
+import Title from "../../../app/Title";
 
 // noinspection JSUnusedLocalSymbols
-const mapStateToProps = (state) => {
+const mapStateToProps = (/*state*/) => {
     return { };
 };
 
@@ -19,6 +19,7 @@ class Page2 extends Component {
     render() {
         return (
             <div>
+                <Title pageTitle="Page 2" />
                 <Container>
                     <Row>
                         <Col md={12}>
@@ -32,4 +33,4 @@ class Page2 extends Component {
     }
 }
 
-export default withRouter(connect(mapStateToProps)(Page2));
+export default connect(mapStateToProps)(Page2);

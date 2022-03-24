@@ -1,0 +1,26 @@
+/* webpackIgnore: true */
+@import "bootstrap/scss/bootstrap";
+/* webpackIgnore: true */
+@import "normalize.css/normalize.css";
+
+// Main
+@import "variables.scss";
+
+//region Core
+
+body {
+  -webkit-font-smoothing: subpixel-antialiased; // Because you, Safari... :unamused:
+  background-color: $content-background;
+}
+
+//endregion
+
+//region Layout
+
+#main-section {
+  margin-top: 20px;
+}
+
+//endregion
+
+/* Put your app styles here */

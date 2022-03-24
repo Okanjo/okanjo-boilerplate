@@ -1,5 +1,9 @@
 "use strict";
 
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! DEPRECATED !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+// THIS FILE ONLY EXISTS TO SERVE AS A REFERENCE TO THE PREVIOUS BUILD PIPELINE
+
 //region Imports
 const { src, dest, parallel, series, watch } = require('gulp');
 const Browserify = require('browserify');
@@ -8,16 +12,14 @@ const Concat = require('gulp-concat');
 const Rename = require('gulp-rename');
 const Babelify = require('babelify');
 const Watchify = require('watchify');
-const Combiner = require('stream-combiner2');
 const Del = require('del');
 const Ignore = require('gulp-ignore');
 const SourceMaps = require('gulp-sourcemaps');
-const LessPluginAutoPrefix = require('less-plugin-autoprefix');
-const cssAutoPrefix = new LessPluginAutoPrefix({ browsers: ["> 5%"] });
-const CleanCSS = require('gulp-clean-css');
-const Less = require('gulp-less');
+const AutoPrefixer = require('autoprefixer');
+const PostCSS = require('gulp-postcss');
+const CleanCSS = require('clean-css');
+const Sass = require('gulp-sass')(require('sass'));
 const Uglify = require('gulp-uglify');
-const Path = require('path');
 
 // Ensure we're at the app root so relative paths work fine
 process.chdir(__dirname);
@@ -65,14 +67,14 @@ const watchifyVendorIgnoreList = [
     'ui/**'
 ];
 
-// Core less files
+// Core Sass files
 const appStyles = [
-    'ui/styles/main.less'
+    'ui/styles/main.scss'
 ];
 
 // Rebuild styles when one of these files are touched
 const watchStyles = [
-    'ui/styles/*.less'
+    'ui/styles/*.scss'
 ];
 
 // Core app sources (what to watch for changes to trigger a rebuild)
@@ -173,19 +175,25 @@ exports.vendorJs = series([
  * Glue all the vendor css files into a single monolith
  */
 exports.vendorCss = function vendorCss() {
-    //noinspection UnnecessaryLocalVariableJS
-    const combined = Combiner.obj([
-        src(vendorCssSources),
-        SourceMaps.init({loadMaps: true}),
-        Concat('vendor.css'),
-        dest('ui/static/dist/css'),
-        CleanCSS({inline: ['!fonts.googleapis.com']}),
-        Rename('vendor.min.css'),
-        SourceMaps.write('.'),
-        dest('ui/static/dist/css')
-    ]);
-
-    return combined;
+    return src(vendorCssSources)
+        .pipe(SourceMaps.init({loadMaps: true}))
+        .pipe(Concat('vendor.css'))
+        .pipe(dest('ui/static/dist/css'))
+        // .pipe(CleanCSS({inline: ['!fonts.googleapis.com']}))
+        .on('data', function(file) {
+            const payload = (new CleanCSS({
+                // compatibility: 'ie9',
+                // units: { point: true }
+                // level: 2,
+                inline: ['!fonts.googleapis.com']
+            })).minify(file.contents.toString());
+            const bufferFile = Buffer.from(payload.styles);
+            return file.contents = bufferFile;
+        })
+        .pipe(Rename('vendor.min.css'))
+        .pipe(SourceMaps.write('.'))
+        .pipe(dest('ui/static/dist/css'))
+    ;
 };
 
 //endregion
@@ -194,36 +202,34 @@ exports.vendorCss = function vendorCss() {
 
 
 /**
- * Compile the Less files into css, glue them together and minify them into a monolith
+ * Compile the Sass files into css, glue them together and minify them into a monolith
  */
 exports.compileCss = function compileCss() {
-    //noinspection UnnecessaryLocalVariableJS
-    const combined = Combiner.obj([
-        src(appStyles),
-        SourceMaps.init({loadMaps: true}),
-        Less({
-            plugins: [cssAutoPrefix],
-            paths: [Path.join(__dirname, 'styles')]
-        }),
-        dest('ui/static/dist/css/tmp'),
+    return src(appStyles)
+        .pipe(SourceMaps.init({loadMaps: true}))
+        .pipe(Sass().on("error", Sass.logError))
+        .pipe(PostCSS([AutoPrefixer()]))
+        .pipe(dest('ui/static/dist/css/tmp'))
 
-        // This part just joins all the less files together and dumps it to dist.css (except ui-guide)
-        Ignore.exclude('ui-guide.css'),
-        Concat('app.css'),
-        dest('ui/static/dist/css'),
+        // This part just joins all the scss files together and dumps it to app.css (except ui-guide)
+        .pipe(Ignore.exclude('ui-guide.css'))
+        .pipe(Concat('app.css'))
+        .pipe(dest('ui/static/dist/css'))
 
         // This part minifies dist.css to dist.min.css
-        CleanCSS({compatibility: 'ie8,-units.pt'}),
-        Rename('app.min.css'),
-        SourceMaps.write('.'),
-        dest('ui/static/dist/css')
-    ]);
-
-    // any errors in the above streams will get caught
-    // by this listener, instead of being thrown:
-    //combined.on('error', console.error.bind(console));
-
-    return combined;
+        .on('data', function(file) {
+            const payload = (new CleanCSS({
+                compatibility: 'ie9',
+                // units: { point: true }
+                level: 2
+            })).minify(file.contents.toString());
+            const bufferFile = Buffer.from(payload.styles);
+            return file.contents = bufferFile;
+        })
+        .pipe(Rename('app.min.css'))
+        .pipe(SourceMaps.write('.'))
+        .pipe(dest('ui/static/dist/css'))
+    ;
 };
 
 // Copy font files to dist
@@ -287,9 +293,14 @@ vendorBrowserLibs.forEach((lib) => {
     appBrowserify.external(lib);
 });
 
-// Initialize watchify instances to to partial rebuilds on the huge monolith source files w/ browserify
+// Initialize watchify instances to partial rebuilds on the huge monolith source files w/ browserify
 const bundler = Watchify(appBrowserify);
 const vendorBundler = Watchify(vendorBrowserify);
+
+exports.stopWatchers = async function stopWatchers() {
+    bundler.close();
+    vendorBundler.close();
+};
 
 // Convert our fancy ES7 + JSX magic into something an old browser can parse
 bundler.transform(Babelify);
@@ -362,18 +373,21 @@ exports.watchEverything = parallel([
 //endregion
 
 //region Main tasks
-exports.build = parallel([
-    // Acquire and build vendor stuff
-    exports.vendorJs,
-    exports.vendorCss,
+exports.build = series(
+    parallel([
+        // Acquire and build vendor stuff
+        exports.vendorJs,
+        exports.vendorCss,
 
-    // Build the css stuff
-    exports.css,
+        // Build the css stuff
+        exports.css,
 
-    // Build the app stuff
-    exports.bundleVendor,
-    exports.bundleApp
-]);
+        // Build the app stuff
+        exports.bundleVendor,
+        exports.bundleApp
+    ]),
+    exports.stopWatchers
+);
 
 // Default, like dev mode
 exports.default = parallel([

@@ -13,7 +13,7 @@ module.exports = async function() {
         reporters: {
             appConsoleReporter: [
                 {
-                    module: 'good-squeeze',
+                    module: '@hapi/good-squeeze',
                     name: 'Squeeze',
                     args: [
                         {
@@ -28,7 +28,7 @@ module.exports = async function() {
                     ]
                 },
                 {
-                    module: 'good-console'
+                    module: '@hapi/good-console'
                 },
                 'stdout'
             ]
@@ -41,7 +41,7 @@ module.exports = async function() {
     }
 
     await this.hapi.register({
-        plugin: require('good'),
+        plugin: require('@hapi/good'),
         options
     });
 };

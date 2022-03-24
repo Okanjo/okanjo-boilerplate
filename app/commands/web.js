@@ -159,35 +159,19 @@ function startServer(app, options) {
         // Fire off the build process, which will start the server on complete
         setImmediate(() => {
 
-            // Build website assets prior to launching
-            const Gulp = require('gulp');
-            const tasks = require('../../gulpfile');
+            const Webpack = require('webpack');
 
-            Gulp.on('start', (e) => {
-                console.log(` >> Starting '${e.name}'...`); // eslint-disable-line no-console
-            });
+            const compiler = Webpack(require('../../webpack.config'));
 
-            Gulp.on('stop', (e) => {
-                console.log(` >> Finished '${e.name}' in ${(e.duration[0] * 1e9 + e.duration[1])/1e9}s`); // eslint-disable-line no-console
-                if (e.uid === 0) {
-                    // BUILD DONE
+            let started = false;
+            console.error('Starting webpack...'); // eslint-disable-line no-console
+            compiler.watch({}, (err, stats) => {
+                console.error(stats.toString({ colors: true })); // eslint-disable-line no-console
+                if (!started) {
+                    started = true;
                     launchBroker(app, options);
                 }
             });
-
-            Gulp.on('error', (err) => {
-                // app.report('Gulp build blew up!', err);
-                console.error(' >> Build failed!', err); // eslint-disable-line no-console
-            });
-
-            Object.keys(tasks).forEach((taskName) => {
-                const task = tasks[taskName];
-                if (typeof task !== 'function') return;
-
-                Gulp.task(taskName, task);
-            });
-
-            tasks.default(/* () => { done } */); // won't complete cuz browserify will keep it rolling
         });
     } else {
         // Skipping build, just start up

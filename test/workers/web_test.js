@@ -58,7 +58,7 @@ describe('Web Command', function () {
             app.config.webServer.hapiServerOptions.cache = [
                 {
                     name: 'redisCache',
-                    engine: new (require('catbox-memory'))({ // sshh this isn't redis
+                    engine: new (require('@hapi/catbox-memory'))({ // sshh this isn't redis
                         partition: 'unit-test-cache'
                     }),
                 }

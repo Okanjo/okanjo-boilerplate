@@ -1,7 +1,7 @@
 "use strict";
 
 import React from 'react';
-import { Route, Switch, withRouter,  } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import App from "./App";
@@ -12,24 +12,24 @@ import Page2 from "../home/overview/page2/Page2";
 import HomePage from "../home/HomePage";
 
 // noinspection JSUnusedLocalSymbols
-const mapStateToProps = (state) => {
+const mapStateToProps = (/*state*/) => {
     return {};
 };
 
 const AppContainer = () => (
     <ScrollToTop>
         <App>
-            <Switch>
+            <Routes>
                 {/* Customer process pages */}
-                <Route exact path="/" component={HomePage} />
+                <Route exact path="/" element={<HomePage />} />
 
-                <Route exact path="/page1" component={Page1} />
-                <Route exact path="/page2" component={Page2} />
+                <Route exact path="/page1" element={<Page1 />} />
+                <Route exact path="/page2" element={<Page2 />} />
 
-                <Route component={NotFound} />
-            </Switch>
+                <Route path="*" element={<NotFound />} />
+            </Routes>
         </App>
     </ScrollToTop>
 );
 
-export default withRouter(connect(mapStateToProps)(AppContainer));
+export default connect(mapStateToProps)(AppContainer);

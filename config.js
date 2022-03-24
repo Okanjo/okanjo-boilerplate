@@ -133,6 +133,11 @@ module.exports = {
 
     //region Unit Test Environment Overrides
     unittest: {
+        webServer: {
+            hapiServerOptions: {
+                port: 7002,
+            }
+        },
         reportToSentry: true
     }
     //endregion

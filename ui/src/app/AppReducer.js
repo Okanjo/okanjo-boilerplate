@@ -6,6 +6,6 @@ const initialState = {
 };
 
 // noinspection JSUnusedLocalSymbols
-export default function AppReducer(state = initialState, action) {
+export default function AppReducer(state = initialState, /*action*/) {
     return state;
-};
+}

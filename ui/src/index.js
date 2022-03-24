@@ -12,6 +12,9 @@ import configureStore from './configureStore';
 const preloadedState = undefined;
 const store = configureStore(preloadedState);
 
+// Clear title tag
+document.title = '';
+
 render(
     <Provider store={store}>
         <Router>
@@ -20,3 +23,4 @@ render(
     </Provider>,
     document.getElementById('root')
 );
+

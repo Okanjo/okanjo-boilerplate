@@ -5,13 +5,11 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <title>Okanjo Boilerplate</title>
-    <link rel="stylesheet" type="text/css" href="/dist/css/vendor.min.css">
-    <link rel="stylesheet" type="text/css" href="/dist/css/app.css">
-    {#<link rel="stylesheet" type="text/css" href="/dist/css/app.min.css">#}
 
-    <!--[if lt IE 9]>
-    <script src="/dist/js/html5shiv.min.js"></script>
-    <![endif]-->
+{#    <link rel="stylesheet" type="text/css" href="/dist/vendor-bundle-main.css">#}
+    <link rel="stylesheet" type="text/css" href="/dist/css-bundle-vendor.css">
+    <link rel="stylesheet" type="text/css" href="/dist/css-bundle-main.css">
+    {# FIXME: Add minified production builds here#}
 
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -33,8 +31,8 @@
     window._ua = '{{ app.config.google.ua }}';
     window.app = {};
 </script>
-<script src="/dist/js/vendor.min.js"></script>
-<script src="/dist/js/bundle-vendor.js"></script>
-<script src="/dist/js/app-bundle.js"></script>
+<script src="/dist/app-bundle-vendor.js"></script>
+<script src="/dist/app-bundle-main.js"></script>
+{# FIXME: Add minified production builds here#}
 </body>
 </html>

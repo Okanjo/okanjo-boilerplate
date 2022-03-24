@@ -1,16 +1,22 @@
 "use strict";
 
-import React, { Component } from 'react';
+import React  from 'react';
 import { Route } from 'react-router-dom';
+import propTypes from "prop-types";
 
 
-const HashRoute = ({ component: Component, path, ...routeProps }) => (
-    <Route
-        {...routeProps}
-        component={({ location, ...props }) =>
-            location.hash === path && <Component {...props} />
-        }
-    />
-);
+export default function HashRoute({ component: Component, path, ...routeProps }) {
+    return (
+        <Route
+            {...routeProps}
+            component={({location, ...props}) =>
+                location.hash === path && <Component {...props} />
+            }
+        />
+    );
+}
 
-export default HashRoute;
+HashRoute.propTypes = {
+    component: propTypes.any,
+    path: propTypes.string
+};
