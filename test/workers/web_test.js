@@ -35,6 +35,8 @@ describe('Web Command', function () {
             for (let statusCode, i = 0; i < 20 && !success; i++) {
                 try {
                     ({statusCode} = await Needle('get', `http://localhost:${app.config.webServer.hapiServerOptions.port}/`));
+                } catch(err) {
+                    console.error('Not ready yet...', err);
                 } finally {
                     if (statusCode === 200) {
                         success = true;
@@ -82,6 +84,8 @@ describe('Web Command', function () {
             for (let statusCode, i = 0; i < 20 && !success; i++) {
                 try {
                     ({statusCode} = await Needle('get', `http://localhost:${app.config.webServer.hapiServerOptions.port}/`));
+                } catch(err) {
+                    console.error('Not ready yet...', err);
                 } finally {
                     if (statusCode === 200) {
                         success = true;
@@ -122,6 +126,8 @@ describe('Web Command', function () {
             for (let statusCode, i = 0; i < 20 && !success; i++) {
                 try {
                     ({statusCode} = await Needle('get', `http://localhost:${app.config.webServer.hapiServerOptions.port}/`));
+                } catch(err) {
+                    console.error('Not ready yet...', err);
                 } finally {
                     if (statusCode === 301) {
                         success = true;
@@ -143,6 +149,8 @@ describe('Web Command', function () {
                             'x-forwarded-proto': 'https'
                         }
                     }));
+                } catch(err) {
+                    console.error('Not ready yet...', err);
                 } finally {
                     if (statusCode === 200) {
                         success = true;
