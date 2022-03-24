@@ -36,7 +36,7 @@ describe('Web Command', function () {
                 try {
                     ({statusCode} = await Needle('get', `http://localhost:${app.config.webServer.hapiServerOptions.port}/`));
                 } catch(err) {
-                    console.error('Not ready yet...', err);
+                    // console.error('Not ready yet...', err);
                 } finally {
                     if (statusCode === 200) {
                         success = true;
@@ -85,7 +85,7 @@ describe('Web Command', function () {
                 try {
                     ({statusCode} = await Needle('get', `http://localhost:${app.config.webServer.hapiServerOptions.port}/`));
                 } catch(err) {
-                    console.error('Not ready yet...', err);
+                    // console.error('Not ready yet...', err);
                 } finally {
                     if (statusCode === 200) {
                         success = true;
@@ -127,7 +127,7 @@ describe('Web Command', function () {
                 try {
                     ({statusCode} = await Needle('get', `http://localhost:${app.config.webServer.hapiServerOptions.port}/`));
                 } catch(err) {
-                    console.error('Not ready yet...', err);
+                    // console.error('Not ready yet...', err);
                 } finally {
                     if (statusCode === 301) {
                         success = true;
@@ -150,7 +150,7 @@ describe('Web Command', function () {
                         }
                     }));
                 } catch(err) {
-                    console.error('Not ready yet...', err);
+                    // console.error('Not ready yet...', err);
                 } finally {
                     if (statusCode === 200) {
                         success = true;
