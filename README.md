@@ -16,7 +16,7 @@ Of course, if you don't need a UI, you are free to remove all UI and webpack com
 # Installation
 
 To run this app, you will need:
-* Node.js LTS v12, v14, v16 – http://nodejs.org
+* Node.js LTS v14, v16 – http://nodejs.org
 
 Once cloned, run npm to install the required dependencies.
 
