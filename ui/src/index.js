@@ -2,7 +2,7 @@
 
 // import 'babel-polyfill'; // Feel like loving IE9? Uncomment this
 import React from 'react';
-import { render } from 'react-dom';
+import ReactDOM from 'react-dom/client';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Provider } from "react-redux";
 
@@ -15,12 +15,13 @@ const store = configureStore(preloadedState);
 // Clear title tag
 document.title = '';
 
-render(
+const root = ReactDOM.createRoot(document.getElementById('root'));
+
+root.render(
     <Provider store={store}>
         <Router>
             <AppContainer />
         </Router>
-    </Provider>,
-    document.getElementById('root')
+    </Provider>
 );
 
