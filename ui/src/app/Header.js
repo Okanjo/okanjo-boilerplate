@@ -2,24 +2,25 @@
 
 import React from 'react';
 import {Container, Nav, Navbar, NavDropdown} from "react-bootstrap";
-import {LinkContainer} from "react-router-bootstrap";
+import {URL_PATHS} from "../constants";
+import LinkContainer from "../common/LinkContainer";
 
 // noinspection JSUnusedLocalSymbols
 export default function Header(/*props*/) {
     return (
         <Navbar bg="dark" variant="dark" collapseOnSelect expand="md">
             <Container>
-                <LinkContainer to="/">
-                    <Navbar.Brand href="/">Okanjo Boilerplate</Navbar.Brand>
+                <LinkContainer to={URL_PATHS.ROOT} exact>
+                    <Navbar.Brand>Okanjo Boilerplate</Navbar.Brand>
                 </LinkContainer>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse>
-                    <Nav>
-                        <LinkContainer to="/page1">
-                            <Nav.Link href="#">Page 1</Nav.Link>
+                    <Nav activeKey={"no-dup-active-classes"}>
+                        <LinkContainer to={URL_PATHS.PAGE_1}>
+                            <Nav.Link eventKey={URL_PATHS.PAGE_1}>Page 1</Nav.Link>
                         </LinkContainer>
-                        <LinkContainer to="/page2">
-                            <Nav.Link href="#">Page 2</Nav.Link>
+                        <LinkContainer to={URL_PATHS.PAGE_2}>
+                            <Nav.Link eventKey={URL_PATHS.PAGE_2}>Page 2</Nav.Link>
                         </LinkContainer>
                         <NavDropdown title="Dropdown" id="basic-nav-dropdown">
                             <NavDropdown.Item>Action</NavDropdown.Item>
@@ -29,14 +30,14 @@ export default function Header(/*props*/) {
                             <NavDropdown.Item>Separated link</NavDropdown.Item>
                         </NavDropdown>
                     </Nav>
-                    <Nav className="ml-auto">
+                    <Nav className="ms-auto" activeKey={"no-dup-active-classes"}>
                         <LinkContainer to="/bogus-page">
-                            <Nav.Link eventKey={1} href="#">
+                            <Nav.Link eventKey={'/bogus-page'} href="#">
                                 Bogus Link
                             </Nav.Link>
                         </LinkContainer>
                         <LinkContainer to="/bogus-page2">
-                            <Nav.Link eventKey={2} href="#">
+                            <Nav.Link eventKey={'/bogus-page2'} href="#">
                                 Link Right
                             </Nav.Link>
                         </LinkContainer>

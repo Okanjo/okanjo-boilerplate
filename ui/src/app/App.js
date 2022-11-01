@@ -1,17 +1,9 @@
 "use strict";
 
 import React, { Component } from 'react';
-
 import Header from './Header';
-
-import { connect } from 'react-redux';
 import propTypes from "prop-types";
 
-// noinspection JSUnusedLocalSymbols
-const mapStateToProps = (/*state*/) => {
-    return {
-    };
-};
 
 class App extends Component {
 
@@ -31,4 +23,4 @@ class App extends Component {
     }
 }
 
-export default connect(mapStateToProps)(App);
+export default App;

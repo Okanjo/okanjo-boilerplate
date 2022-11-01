@@ -4,7 +4,7 @@ import React from 'react';
 
 import {useSelector} from 'react-redux';
 import {Col, Container, Row} from "react-bootstrap";
-import Title from "../../../app/Title";
+import Title from "../../../common/Title";
 
 export default function Page1() {
 

@@ -1,10 +1,7 @@
 "use strict";
 
-const YOUR_APP_CONSTANT = {
-    apple: 'fruit',
-    tomato: 'vegetable'
-};
-
-export {
-    YOUR_APP_CONSTANT,
+export const URL_PATHS = {
+    ROOT: '/',
+    PAGE_1: '/page1',
+    PAGE_2: '/page2',
 };

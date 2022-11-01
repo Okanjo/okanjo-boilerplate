@@ -6,7 +6,7 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Provider } from "react-redux";
 
-import AppContainer from './app/AppContainer';
+import AppFrame from './app/AppFrame';
 import configureStore from './configureStore';
 
 const preloadedState = undefined;
@@ -20,7 +20,7 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <Provider store={store}>
         <Router>
-            <AppContainer />
+            <AppFrame />
         </Router>
     </Provider>
 );

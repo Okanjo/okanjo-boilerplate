@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 
 import { connect } from 'react-redux';
 import {Col, Container, Row} from "react-bootstrap";
-import Title from "../../../app/Title";
+import Title from "../../../common/Title";
 
 // noinspection JSUnusedLocalSymbols
 const mapStateToProps = (/*state*/) => {
