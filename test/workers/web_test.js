@@ -34,7 +34,7 @@ describe('Web Command', function () {
             let success = false;
             for (let statusCode, i = 0; i < 20 && !success; i++) {
                 try {
-                    ({statusCode} = await Needle('get', `http://localhost:${app.config.webServer.hapiServerOptions.port}/`));
+                    ({statusCode} = await Needle('get', `http://127.0.0.1:${app.config.webServer.hapiServerOptions.port}/`));
                 } catch(err) {
                     // console.error('Not ready yet...', err);
                 } finally {
@@ -83,7 +83,7 @@ describe('Web Command', function () {
             let success = false;
             for (let statusCode, i = 0; i < 20 && !success; i++) {
                 try {
-                    ({statusCode} = await Needle('get', `http://localhost:${app.config.webServer.hapiServerOptions.port}/`));
+                    ({statusCode} = await Needle('get', `http://127.0.0.1:${app.config.webServer.hapiServerOptions.port}/`));
                 } catch(err) {
                     // console.error('Not ready yet...', err);
                 } finally {
@@ -125,7 +125,7 @@ describe('Web Command', function () {
             let success = false;
             for (let statusCode, i = 0; i < 20 && !success; i++) {
                 try {
-                    ({statusCode} = await Needle('get', `http://localhost:${app.config.webServer.hapiServerOptions.port}/`));
+                    ({statusCode} = await Needle('get', `http://127.0.0.1:${app.config.webServer.hapiServerOptions.port}/`));
                 } catch(err) {
                     // console.error('Not ready yet...', err);
                 } finally {
@@ -144,7 +144,7 @@ describe('Web Command', function () {
             let success = false;
             for (let statusCode, i = 0; i < 20 && !success; i++) {
                 try {
-                    ({ statusCode } = await Needle('get', `http://localhost:${app.config.webServer.hapiServerOptions.port}/`, {}, {
+                    ({ statusCode } = await Needle('get', `http://127.0.0.1:${app.config.webServer.hapiServerOptions.port}/`, {}, {
                         headers: {
                             'x-forwarded-proto': 'https'
                         }

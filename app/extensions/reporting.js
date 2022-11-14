@@ -35,7 +35,7 @@ module.exports = async function() {
         }
     };
 
-    /* istanbul ignore else: we don't want to see all the logs when running reports */
+    /* istanbul ignore next: we don't want to see all the logs when running reports */
     if (process.env.SILENCE_REPORTS) {
         options.reporters.appConsoleReporter.pop(); // strip stdout so we don't log to console
     }

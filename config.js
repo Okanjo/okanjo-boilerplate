@@ -11,7 +11,7 @@ module.exports = {
     webServer: {
 
         hapiServerOptions: {
-            port: 7001,
+            port: 7003,
             routes: {
                 // cors: true, // always allow CORS - think about it!
                 // jsonp: 'callback', // allow transposition of responses to JSONP callbacks when desired
