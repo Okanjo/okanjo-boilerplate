@@ -1,10 +1,7 @@
-/* webpackIgnore: true */
-@import "bootstrap/scss/bootstrap";
-/* webpackIgnore: true */
-@import "normalize.css/normalize.css";
-
-// Main
 @import "variables.scss";
+@import "bootstrap/scss/_functions";
+@import "bootstrap/scss/_variables";
+@import "bootstrap/scss/mixins/transition";
 
 //region Core
 

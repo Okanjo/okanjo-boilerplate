@@ -22,6 +22,7 @@ module.exports = [
             main: [
                 // App
                 './ui/src/index.js',
+                './ui/styles/base.scss',
                 './ui/styles/main.scss',
             ],
         },
@@ -50,7 +51,28 @@ module.exports = [
                         // Compiles Sass to CSS
                         {loader: "sass-loader", options: {sourceMap: true}},
                     ]
-                }
+                },
+
+                // SVG
+                {
+                    test: /\.svg$/i,
+                    type: 'asset',
+                    resourceQuery: /url/, // *.svg?url
+                },
+                {
+                    test: /\.svg$/i,
+                    issuer: /\.[jt]sx?$/,
+                    resourceQuery: { not: [/url/] }, // exclude react component if *.svg?url
+                    use: ['@svgr/webpack'],
+                },
+
+                // PNG
+                {
+                    test: /\.png$/i,
+                    type: 'asset/inline',
+                    resourceQuery: /url/, // *.png?url
+                },
+
             ]
         },
         resolve: {

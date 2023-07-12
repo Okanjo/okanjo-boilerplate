@@ -5,9 +5,16 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Provider } from "react-redux";
-
 import AppFrame from './app/AppFrame';
 import configureStore from './configureStore';
+import * as Sentry from "@sentry/react";
+
+// Report errors in production only
+if (window._dsn) {
+    Sentry.init({
+        dsn: window._dsn
+    });
+}
 
 const preloadedState = undefined;
 const store = configureStore(preloadedState);

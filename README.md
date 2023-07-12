@@ -5,7 +5,7 @@
 This project delivers a fully working application using the Okanjo framework. You can use this app as 
 a starting point for new web applications.  
 
-The Okanjo Boilerplate app includes a simple gulp-based build process, supporting:
+The Okanjo Boilerplate app includes a simple webpack-based build process, supporting:
 * Webpack + Babel – so you can use the latest and greatest ECMA features
 * React + Redux – for UI, with JSX support
 * Bootstrap + React Bootstrap – for fast UI prototyping
@@ -78,15 +78,18 @@ All the scripts registered are:
     * Session – http://developer.okanjo.com/okanjo-app-server-session
   * Hapi – https://hapijs.com/api
     * catbox-redis – https://github.com/hapijs/catbox-redis
+    * catbox-memory - https://github.com/hapijs/catbox-memory
     * good – https://github.com/hapijs/good
       * good-console – https://github.com/hapijs/good-console
       * good-squeeze – https://github.com/hapijs/good-squeeze
     * hapi-auth-basic-key – https://github.com/kfitzgerald/hapi-auth-basic-key
     * joi – https://github.com/sideway/joi
   * Commander.js – https://github.com/tj/commander.js/
+  * nanoid - https://github.com/ai/nanoid
 * Build Process
   * Babel – https://babeljs.io/docs/en/
   * Webpack – https://webpack.js.org/
+    * @svgr/webpack - https://react-svgr.com/
   * ESLint – https://eslint.org/
 * UI Stack
   * React – https://reactjs.org/docs/hello-world.html
@@ -95,10 +98,15 @@ All the scripts registered are:
     * Redux-Localstorage – https://github.com/elgerlambert/redux-localstorage
   * React-Router – https://reacttraining.com/react-router/web/guides/philosophy
   * React-Bootstrap – https://react-bootstrap.github.io/getting-started/introduction/
+    * Bootstrap - https://getbootstrap.com/ 
   * Sass – https://sass-lang.com/
+    * autoprefixer - https://github.com/postcss/autoprefixer
+    * clean-css - https://github.com/clean-css/clean-css
   * Utilities
     * Classnames – https://github.com/JedWatson/classnames
     * TitleCase – https://github.com/blakeembrey/change-case
+    * Formik - https://formik.org/
+    * Yup - https://github.com/jquense/yup
 * Testing
   * Mocha – https://mochajs.org/
   * Should – https://shouldjs.github.io/

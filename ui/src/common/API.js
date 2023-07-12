@@ -38,7 +38,7 @@ function encodeQuery(obj) {
     return search.toString();
 }
 
-function startFetch(method, path, payload, query) {
+export function startFetch(method, path, payload, query) {
     const fetchArgs = {
         method,
         credentials: 'same-origin',

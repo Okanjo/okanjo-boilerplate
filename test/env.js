@@ -6,5 +6,5 @@
 process.env.env = 'unittest';
 
 process.on('unhandledRejection', error => {
-    console.log('unhandledRejection', error);
+    console.error('unhandledRejection', error); // eslint-disable-line no-console
 });
